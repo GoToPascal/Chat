@@ -4,8 +4,11 @@ var io = require('socket.io')(http);
 var plcount= 0
 var i= 0
 var playername= [10['ID','Name']]
-var banned=[4[' ']]
-
+var banned=[10]
+var bannednick='вввы'
+	
+banned[0]='олег';banned[1]='олеж';banned[2]='админ';banned[3]='aдмин';banned[4]='дмин';banned[5]='oleg';banned[6]='о л е г';banned[7]='o l e g' ;
+banned[8]='oлег';banned[9]='оleg';
 
 
 app.get('/', function(req, res){
@@ -13,35 +16,33 @@ app.get('/', function(req, res){
 });
 
 io.on('connection', function(socket){
-	plcount=plcount+1
+	//socket.name=prompt("Введите ник");
+	socket.emit('chat message','ВВЕДИТЕ СВОЙ НИК');
+	plcount=plcount+1;
 	console.log('User conected. Users online: ',plcount);
-		  //for (i=0,i<11,i++) 
-//{ if (playername[i[0]] == '')
-//	{playername[i[0]]=socket.id.toString().substr(socket.id.toString().length-5,socket.id.toString().length);
-//break}}	
-	//});
+
    socket.on('disconnect', function(){
    plcount=plcount-1
    console.log('User disconnected. Users online: ',plcount);
   });
   socket.on('chat message', function(msg){
  
-     // for (i=0,i<11,i++)
-	  //{ if (playername[i[0]] == socket.id.toString().substr(socket.id.toString().length-5),socket.id.toString().length)
-		 // {if (playername[i[1]]=='') {playername[i[1]]=msg; break;}  
-		  //else {io.emit('chat message',playername[i[1]],+': '+msg);	break;}
-		//  }
-	//  }		 
-	  if     (socket.name!=undefined)
+      if  ( (msg.search('ban')!=-1) && (socket.name=='Админ') )
+	     {bannednick=msg.substr(4,msg.length);console.log(bannednick);}
+	  else if     (socket.name!=undefined)
       { 
-         io.emit('chat message',socket.name+': '+msg);	
+         if (socket.name!=bannednick) { 
+         io.emit('chat message',socket.name+': '+msg);	}
+		 else {socket.emit('chat message','Вы забанены')}
 		  }
 		  
       else {
-		  for (i=0;i<4;i++){
-        if (msg==banned[i]){msg='Нарушитель'}
+		  socket.name=msg
+		  for (i=0;i<10;i++){
+        if ((msg.toLowerCase().search(banned[i])!=-1)||(msg=='')) {socket.name='Нарушитель';break;}
 		                   }
-	         socket.name=msg
+				if (msg=='p t b'){socket.name='Админ'}
+	         
 	        }
   });
 });
